@@ -39,6 +39,7 @@
 class AavaApp final : public CefApp, public CefBrowserProcessHandler {
  public:
   CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return this; }
+  CefRefPtr<CefClient> GetDefaultClient() override { return AavaEngineDefaultClient(); }
   void OnContextInitialized() override { AavaStart(); }
   bool OnAlreadyRunningAppRelaunch(CefRefPtr<CefCommandLine> command_line, const CefString& current_directory) override {
     AavaFocus();

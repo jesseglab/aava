@@ -229,6 +229,7 @@ class BrowserClient final : public CefClient, public CefLifeSpanHandler, public 
   CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
   void OnAfterCreated(CefRefPtr<CefBrowser> browser) override {
     CEF_REQUIRE_UI_THREAD(); browsers[id_] = browser;
+    if (quitting) { browser->GetHost()->CloseBrowser(false); return; }
     if (!pipOwner_.empty()) Emit(pipOwner_, "site-pip", "1");
     browser->GetHost()->SetAccessibilityState(STATE_ENABLED);
     if (embedded_ && browser->GetHost()->GetRuntimeStyle() == CEF_RUNTIME_STYLE_ALLOY) {
@@ -312,6 +313,10 @@ class BrowserClient final : public CefClient, public CefLifeSpanHandler, public 
                         const CefString& suggested_name, CefRefPtr<CefBeforeDownloadCallback> cb) override {
     if (Locked(browser)) return true;
     NSString* filename = [[NSString stringWithUTF8String:suggested_name.ToString().c_str()] lastPathComponent];
+    // Chrome must choose extension targets so its installer and security checks run.
+    // This delegates handling; a .crx suffix does not grant installation permission.
+    if ([filename.pathExtension.lowercaseString isEqualToString:@"crx"] ||
+        item->GetMimeType().ToString() == "application/x-chrome-extension") return false;
     Prompt(id_, browser, "download", @"Save download", @"Save this file to your Downloads folder. Existing files will not be replaced.", @"Save file", true, filename,
       [cb](bool allow, std::string name) {
         if (!allow) return;
@@ -425,6 +430,10 @@ extern "C" void AavaEngineImportArcCookies(const char* profile, const char* json
   if (readyProfiles.count(profileID)) begin(); else pendingProfiles[profileID].push_back(begin);
 }
 
+CefRefPtr<CefClient> AavaEngineDefaultClient() {
+  // Chrome-created extension windows must participate in privacy and shutdown.
+  return new BrowserClient("chrome-" + std::string(NSUUID.UUID.UUIDString.UTF8String), false);
+}
 extern "C" void AavaEngineSetCallback(AavaEventCallback cb) { callback = cb; }
 extern "C" void AavaEngineCreate(void* parent, const char* id, const char* profile, const char* url) {
   CEF_REQUIRE_UI_THREAD();

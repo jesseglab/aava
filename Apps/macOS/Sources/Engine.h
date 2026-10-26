@@ -31,6 +31,8 @@ bool AavaOfferLinkChoice(const char* tab, const char* source, const char* target
 bool AavaCanOfferLinkChoice(const char* tab, const char* source, const char* target);
 #ifdef __cplusplus
 }
+#include "include/cef_client.h"
+CefRefPtr<CefClient> AavaEngineDefaultClient();
 #endif
 
 #include "MiniEngine.h"

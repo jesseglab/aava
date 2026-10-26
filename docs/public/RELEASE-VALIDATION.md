@@ -1,18 +1,24 @@
 # Release validation record
 
-Checkpoint: 2026-10-26. Native app built from `bc2fed5`, with the hardened-signing workflow introduced after that commit. macOS 27.0, Apple Silicon, CEF 156.0.14 / Chromium 156.0.8078.48.
+Checkpoint: 2026-10-26. Native validation covers the release workflow at `74104f4` plus the extension lifecycle changes described below. macOS 27.0, Apple Silicon, CEF 156.0.14 / Chromium 156.0.8078.48.
 
 This is an incomplete validation record, not release approval. Tests use a separate **Aava Validation** app and fresh profiles; ordinary browsing profiles are not copied or changed.
 
 | Check | Observed result | Remaining work |
 |---|---|---|
-| Hardened runtime | Development-signed app and nested helpers pass strict signature checks; app launches and renders sites. Secure timestamps verified. | Repeat using the publishing team's Developer ID certificate. |
-| Distribution identity gate | An Apple Development identity is rejected for distribution before signing mutations. | Install and verify Developer ID Application identity for the publishing team. |
-| Apple notarization | No real submission made. | Configure credentials, submit, obtain Accepted result, staple, verify Gatekeeper and extracted archive. |
-| Web Store / Dark Reader | Official listing loads. Add to Chrome reaches the native installation prompt for Dark Reader 4.9.133. | Approve requested all-site access, complete installation, verify rendering, action popup, persistence, and space isolation. |
+| Hardened runtime / distribution signing | Geeklab Developer ID Application certificate issued and installed. Aava 0.3.0 build 6 and nested code pass strict distribution-signature, secure-timestamp and hardened-runtime checks. | Apple acceptance, stapling and Gatekeeper validation remain separate gates. |
+| Distribution identity gate | Development identities are rejected before distribution signing. The installed Geeklab Developer ID identity passed the team check. | Retain the private key in Keychain; it was not exported. |
+| Apple notarization | No real submission made. The intended local credential profile is not configured. | Configure credentials, submit, obtain Accepted result, staple, verify Gatekeeper and extracted archive. |
+| Web Store / Dark Reader | Dark Reader 4.9.133 installed from the official Chrome Web Store with user-approved all-site access. Installation survives process restart. A light-only fixture is white with the extension disabled and dark when enabled. Extension options render. A separate fresh space has an empty extensions manager. Incognito and file-URL access remain off. | Verify toolbar action targets the current native tab, settings persistence, updates, and representative additional extensions. These observations do not establish universal Chrome compatibility. |
 | Google Meet | Official Google sign-in page loads in its fresh space. | Test-account sign-in, real call, audio/video, sharing, popout and return, reconnect, end call. |
 | Microsoft Teams | Official Microsoft sign-in page loads in its fresh space. | Test-account sign-in, real call, audio/video, sharing, popout and return, reconnect, end call. |
 | Release workflow tests | Five mocked safety-gate tests pass; Python scripts compile. | These tests do not constitute Apple acceptance or live-service validation. |
+
+## Extension lifecycle fixes
+
+Extension package downloads now defer to Chromium's normal handling instead of Aava's generic Save file drawer. Chromium retains installation prompts and security checks. The previous drawer flow did install Dark Reader; this change removes an unnecessary download interception, not a claimed universal installation failure.
+
+A repeatable Quit hang was observed in the isolated validation app. CEF's `GetDefaultClient` contract warns that Chrome-created windows without a client are unmanaged and block shutdown. Aava now supplies a fresh tracked client for those windows, including extension-created pages, and closes late-created windows during shutdown. Regression validation passed in the Developer ID-signed build 6: open Dark Reader options, open its Help page in a Chromium-created window, use Quit Aava, confirm the app process exits, and relaunch successfully. This does not cover every extension or unsaved-form shutdown scenario.
 
 ## Live test protocol
 
