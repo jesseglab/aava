@@ -14,6 +14,8 @@ struct AavaBrowserView: View {
         let width = SidebarSizing.width(liveSidebarWidth ?? savedSidebarWidth, container: geometry.size.width)
         HStack(spacing: 8) {
             if sidebarVisible { sidebar(width: width, height: geometry.size.height).frame(width: width) }
+            VStack(spacing: AavaGeometry.frameInset) {
+                if !sidebarVisible { collapsedToolbar(containerWidth: geometry.size.width) }
             ZStack(alignment: .top) {
                 Group {
                     if store.locked { PrivateSpaceCover(store: store).id(store.space.id) }
@@ -31,7 +33,7 @@ struct AavaBrowserView: View {
                 if !store.hasPanel {
                     VStack(spacing: 0) {
                         Color.clear.frame(height: 8).contentShape(Rectangle()).onHover { if $0 { urlHovered = true } }
-                        if !store.locked && (urlHovered || !sidebarVisible) { urlBar.padding(.horizontal, 12).transition(.opacity) }
+                        if !store.locked && sidebarVisible && urlHovered { urlBar.padding(.horizontal, 12).transition(.opacity) }
                     }.onHover { urlHovered = $0 }
                     if store.showFind && !store.locked {
                         HStack {
@@ -42,6 +44,7 @@ struct AavaBrowserView: View {
                     }
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }.padding(AavaGeometry.frameInset)
             .background {
                 AavaChromeMaterial(space: store.space, hideMedia: store.locked)
@@ -123,14 +126,40 @@ struct AavaBrowserView: View {
             .background { SpaceSwipeRegion(enabled: !store.hasPanel && !store.showSearch && !store.showOnboarding) { store.stepSpace($0) } }
     }
     private func sectionLabel(_ text: String) -> some View { Text(text).font(.system(size: 10, weight: .medium)).lineLimit(1).fixedSize(horizontal: true, vertical: false).opacity(0.5).padding(.horizontal, 10).padding(.top, 9).padding(.bottom, 4) }
+    private func collapsedToolbar(containerWidth: CGFloat) -> some View {
+        ZStack {
+            HStack(spacing: 8) {
+                Color.clear.frame(width: 88).allowsHitTesting(false)
+                tool("Show sidebar", "sidebar.left") { sidebarVisible = true }
+                tool("Back", "chevron.left") { store.action("back") }.disabled(store.locked || !store.canBack)
+                tool("Forward", "chevron.right") { store.action("forward") }.disabled(store.locked || !store.canForward)
+                Spacer(minLength: 0)
+                tool("New tab", "plus") { store.newTab() }.disabled(store.locked)
+            }.padding(.horizontal, AavaGeometry.sidebarInset)
+            Group {
+                if store.locked {
+                    Label("Private space", systemImage: "lock.fill").font(.system(size: 12))
+                } else { addressContents }
+            }
+            .padding(.horizontal, 10)
+            .frame(width: min(560, max(180, containerWidth - 440)), height: 32)
+            .background(ink.opacity(0.065), in: RoundedRectangle(cornerRadius: AavaGeometry.controlRadius, style: .continuous))
+        }
+        .frame(height: 2 * (AavaGeometry.trafficLightCenterY - AavaGeometry.frameInset))
+        .foregroundStyle(ink)
+    }
     private var urlBar: some View {
+        addressContents.padding(.horizontal, 10).frame(height: 36)
+            .background(AavaBrand.salt, in: RoundedRectangle(cornerRadius: AavaGeometry.controlRadius))
+            .foregroundStyle(AavaBrand.deep)
+    }
+    private var addressContents: some View {
         HStack(spacing: 10) {
-            if !sidebarVisible { tool("Show sidebar", "sidebar.left") { sidebarVisible = true } }
             Image(systemName: store.currentURL?.scheme == "https" ? "lock" : "globe").font(.system(size: 10)).opacity(0.6)
-            Button { store.search() } label: { Text(store.currentURL?.host ?? "New tab").font(.system(size: 12)).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 8) }
+            Button { store.search() } label: { Text(store.currentURL?.host ?? "New tab").font(.system(size: 12)).lineLimit(1).truncationMode(.middle).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 8) }
             tool(store.copied ? "Copied" : "Copy URL", store.copied ? "checkmark" : "link") { store.copyURL() }.disabled(store.currentURL == nil)
             tool(store.loading ? "Stop" : "Reload", store.loading ? "xmark" : "arrow.clockwise") { store.action(store.loading ? "stop" : "reload") }
-        }.padding(.horizontal, 10).frame(height: 36).background(AavaBrand.salt, in: RoundedRectangle(cornerRadius: AavaGeometry.controlRadius)).foregroundStyle(AavaBrand.deep)
+        }
     }
     private func tool(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) { Image(systemName: icon).font(.system(size: 12)).frame(width: 26, height: 28) }.help(title).accessibilityLabel(title)
