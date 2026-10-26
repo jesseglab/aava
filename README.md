@@ -6,6 +6,7 @@
 <p align="center">
   <a href="#a-familiar-place-a-few-new-possibilities">Explore</a> ·
   <a href="#coming-from-arc">Compare with Arc</a> ·
+  <a href="https://github.com/jesseglab/aava/releases/tag/v0.3.0-alpha.2">Download preview</a> ·
   <a href="docs/public/BUILDING.md">Build for Mac</a> ·
   <a href="docs/public/PREVIEW-STATUS.md">Preview status</a>
 </p>
@@ -16,8 +17,8 @@ Aava brings the sidebar you love into a browser you can make your own. Keep proj
 
 **Native SwiftUI/AppKit shell. Chromium for websites. Direct Mac release first.**
 
-> **0.3.0-alpha.1 · Developer preview**<br>
-> This is a working browser in active development. Chrome extension compatibility and real Meet/Teams popouts still need acceptance testing. The initial package is a draft developer preview; distribution signing, notarization and a production update service are not complete. [What works, what is tested, and what is next →](docs/public/PREVIEW-STATUS.md)
+> **0.3.0-alpha.2 · Signed developer preview · Build 6**<br>
+> This is a working browser in active development. The download is Developer ID signed by Geeklab, but **not yet notarized**. Dark Reader has passed initial native checks; broader extension compatibility, real Meet/Teams calls and popouts, and a production update service remain unfinished. macOS may block the download until notarization is complete. [What works, what is tested, and what is next →](docs/public/PREVIEW-STATUS.md)
 
 ![Aava’s native Mac browser with a Tide space, favorite tiles, nested folders and vertical tabs](docs/media/browser.png)
 
@@ -102,7 +103,7 @@ python3 scripts/fetch-cef.py
 open build/mac/Aava.app
 ```
 
-The build is locally ad-hoc signed. It is not a notarized release or Mac App Store archive. [Build, signing and test details →](docs/public/BUILDING.md)
+The source-build command above produces a locally ad-hoc signed build. The GitHub preview download is separately Developer ID signed by Geeklab. It is not a notarized release or Mac App Store archive. [Build, signing and test details →](docs/public/BUILDING.md)
 
 ```sh
 swift test
