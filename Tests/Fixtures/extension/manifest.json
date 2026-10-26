@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Aava compatibility check",
+  "version": "1.0.0",
+  "description": "Local-only development checks for content scripts, messaging, service workers, storage, scripting and request rules.",
+  "permissions": ["storage", "activeTab", "scripting", "declarativeNetRequest"],
+  "host_permissions": ["http://127.0.0.1:8769/*"],
+  "background": {"service_worker": "worker.js"},
+  "action": {"default_popup": "popup.html"},
+  "content_scripts": [{"matches": ["http://127.0.0.1:8769/*"], "js": ["content.js"]}],
+  "declarative_net_request": {"rule_resources": [{"id": "local_rules", "enabled": true, "path": "rules.json"}]}
+}

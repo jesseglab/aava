@@ -1,0 +1,13 @@
+{
+  "version": "0.3.0-alpha.1",
+  "bundleVersion": "3",
+  "platform": "macOS",
+  "architecture": "arm64",
+  "minimumOS": "14.0",
+  "engine": "Chromium / CEF",
+  "distribution": "direct-mac",
+  "status": "draft-developer-preview",
+  "distributionSigned": false,
+  "notarized": false,
+  "mobile": "iPhone and iPad later"
+}

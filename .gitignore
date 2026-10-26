@@ -1,0 +1,29 @@
+.build/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+vendor/
+output/
+.impeccable.md
+.agents/
+.codex/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+# Local development journals and private review artifacts stay on this Mac.
+docs/*
+!docs/public/
+!docs/media/
+release/app-store/
+
+# Retired design generators and exploratory store checks.
+scripts/import-icons.py
+scripts/import-mac-icons.py
+scripts/check-app-store-readiness.py

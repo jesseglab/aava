@@ -1,0 +1,152 @@
+{
+  "sidebar": {
+    "containers": [
+      {
+        "standalone": {
+          "_0": "qa"
+        }
+      },
+      {
+        "spaces": [
+          "synthetic-arc-space-0",
+          {
+            "id": "synthetic-arc-space-0",
+            "title": "Design",
+            "profile": {
+              "default": true
+            },
+            "newContainerIDs": [
+              {
+                "pinned": {}
+              },
+              "pins",
+              {
+                "unpinned": {}
+              },
+              "today"
+            ]
+          },
+          "synthetic-arc-space-1",
+          {
+            "id": "synthetic-arc-space-1",
+            "title": "Personal",
+            "profile": {
+              "default": true
+            },
+            "newContainerIDs": [
+              {
+                "pinned": {}
+              },
+              "pins",
+              {
+                "unpinned": {}
+              },
+              "today"
+            ]
+          }
+        ],
+        "items": [
+          "pins",
+          {
+            "id": "pins",
+            "childrenIds": [
+              "pinned",
+              "folder"
+            ],
+            "data": {
+              "itemContainer": {}
+            }
+          },
+          "today",
+          {
+            "id": "today",
+            "childrenIds": [
+              "tab"
+            ],
+            "data": {
+              "itemContainer": {}
+            }
+          },
+          "pinned",
+          {
+            "id": "pinned",
+            "data": {
+              "tab": {
+                "savedURL": "https://developer.apple.com",
+                "savedTitle": "Apple Developer"
+              }
+            }
+          },
+          "folder",
+          {
+            "id": "folder",
+            "title": "Projects",
+            "childrenIds": [
+              "subfolder"
+            ],
+            "data": {
+              "list": {}
+            }
+          },
+          "subfolder",
+          {
+            "id": "subfolder",
+            "title": "Research",
+            "childrenIds": [
+              "saved"
+            ],
+            "data": {
+              "list": {}
+            }
+          },
+          "saved",
+          {
+            "id": "saved",
+            "data": {
+              "tab": {
+                "savedURL": "https://developer.mozilla.org",
+                "savedTitle": "MDN"
+              }
+            }
+          },
+          "tab",
+          {
+            "id": "tab",
+            "data": {
+              "tab": {
+                "savedURL": "http://127.0.0.1:8769/",
+                "savedTitle": "Browser checks"
+              }
+            }
+          },
+          "favorites",
+          {
+            "id": "favorites",
+            "childrenIds": [
+              "favorite"
+            ],
+            "data": {
+              "itemContainer": {}
+            }
+          },
+          "favorite",
+          {
+            "id": "favorite",
+            "data": {
+              "tab": {
+                "savedURL": "https://example.org",
+                "savedTitle": "Example favorite"
+              }
+            }
+          }
+        ],
+        "topAppsContainerIDs": [
+          {
+            "default": true
+          },
+          "favorites"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aava live call fixture</title><style>body{margin:0;background:#14252b;color:#eef5f2;font:15px system-ui;padding:18px}h1{font-size:24px}video{width:100%;max-height:50vh;background:#243c43;border-radius:12px}button{border:0;border-radius:8px;padding:12px;margin:5px;background:#c3e0d2;color:#183c34}#status{line-height:1.7}small{color:#b6c9cb}canvas{display:none}</style><h1>Live call fixture</h1><p>Local WebRTC loopback with explicit loopback candidates. Synthetic video and silent audio; no camera, microphone or external server.</p><section id="meeting"><video id="remote" autoplay playsinline muted></video><p id="status">Ready</p><button id="start">Start synthetic call</button><button id="mute" disabled>Mute video</button><button id="end" disabled>Hang up</button></section><button id="pip">Site picture-in-picture</button><p id="result"></p><small id="identity"></small><canvas id="source" width="640" height="360"></canvas><script>
+const elements=new Map([...document.querySelectorAll('[id]')].map(el=>[el.id,el]));
+const $=id=>elements.get(id), nonce=crypto.randomUUID();
+$('identity').textContent='Page instance: '+nonce;
+let startTime, frames=0, stream, send, receive, sound, timer, media, muted=false;
+const ctx=$('source').getContext('2d');
+$('start').onclick=async()=>{
+ try {
+  $('start').disabled=true;startTime=Date.now(); sound=new AudioContext();
+  const oscillator=sound.createOscillator(), gain=sound.createGain(), audio=sound.createMediaStreamDestination(); gain.gain.value=0; oscillator.connect(gain).connect(audio); oscillator.start();
+  timer=setInterval(()=>{frames++;ctx.fillStyle='#375f69';ctx.fillRect(0,0,640,360);ctx.fillStyle='#d9f0df';ctx.beginPath();ctx.arc(320+Math.sin(frames/20)*150,160,50,0,Math.PI*2);ctx.fill();ctx.font='28px system-ui';ctx.fillText('Live · '+Math.floor((Date.now()-startTime)/1000)+'s',24,324);$('status').textContent=`Peer: ${receive?.connectionState}; sender: ${send?.connectionState} · frame ${frames} · instance ${nonce.slice(0,8)}`;},100);
+  stream=$('source').captureStream(10); stream.addTrack(audio.stream.getAudioTracks()[0]);
+  send=new RTCPeerConnection({iceServers:[]});receive=new RTCPeerConnection({iceServers:[]});
+  const queues=new Map([[send,[]],[receive,[]]]);
+  function candidate(peer,event){if(!event.candidate)return;const data=event.candidate.toJSON();data.candidate=data.candidate.replace(/([a-z0-9-]+\.local)(?= )/ig,'127.0.0.1');event={candidate:new RTCIceCandidate(data)};if(peer.remoteDescription && peer.localDescription)peer.addIceCandidate(event.candidate).catch(report);else queues.get(peer).push(event.candidate);}
+  send.onicecandidate=e=>candidate(receive,e);receive.onicecandidate=e=>candidate(send,e);
+  receive.ontrack=e=>{$('remote').srcObject=e.streams[0];};stream.getTracks().forEach(t=>send.addTrack(t,stream));
+  await send.setLocalDescription(await send.createOffer());await receive.setRemoteDescription(send.localDescription);
+  await receive.setLocalDescription(await receive.createAnswer());await send.setRemoteDescription(receive.localDescription);
+  for(const peer of [send,receive]){for(const c of queues.get(peer))await peer.addIceCandidate(c);queues.set(peer,[]);}
+  $('start').disabled=true;$('mute').disabled=false;$('end').disabled=false;
+ } catch(e){report(e);stop();}
+};
+function report(e){$('result').textContent=String(e);}
+function stop(){clearInterval(timer);stream?.getTracks().forEach(t=>t.stop());send?.close();receive?.close();sound?.close();$('status').textContent='Call ended';$('mute').disabled=true;$('end').disabled=true;}
+$('end').onclick=stop;
+$('mute').onclick=()=>{muted=!muted;stream.getVideoTracks()[0].enabled=!muted;$('mute').textContent=muted?'Unmute video':'Mute video';};
+$('pip').onclick=async()=>{try{if(!window.documentPictureInPicture)throw Error('Document PiP unavailable');const pip=await documentPictureInPicture.requestWindow({width:480,height:360});const style=pip.document.createElement('style');style.textContent=document.querySelector('style').textContent;pip.document.head.append(style);pip.document.body.append($('meeting'));pip.addEventListener('pagehide',()=>document.body.insertBefore(pip.document.querySelector('#meeting'),$('pip')),{once:true});}catch(e){report(e);}};
+</script></html>
