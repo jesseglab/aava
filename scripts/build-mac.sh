@@ -33,4 +33,9 @@ COPYFILE_DISABLE=1 ditto --norsrc "$APP" "$STAGED_APP"
 python3 scripts/sign-mac.py "$STAGED_APP"
 echo "Verified staging build: $STAGED_APP"
 COPYFILE_DISABLE=1 ditto --norsrc "$STAGED_APP" "$APP"
+# ditto can preserve destination Finder metadata even when resource copying is disabled.
+for ATTRIBUTE in com.apple.FinderInfo com.apple.ResourceFork; do
+  xattr -dr "$ATTRIBUTE" "$APP" >/dev/null 2>&1 || true
+done
+codesign --verify --deep --strict "$APP"
 echo "Built: $APP"

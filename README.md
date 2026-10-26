@@ -17,7 +17,7 @@ Aava brings the sidebar you love into a browser you can make your own. Keep proj
 **Native SwiftUI/AppKit shell. Chromium for websites. Direct Mac release first.**
 
 > **0.3.0-alpha.1 · Developer preview**<br>
-> This is a working browser in active development. Chrome extension compatibility and real Meet/Teams popouts still need acceptance testing. The initial package is being prepared as a draft; distribution signing, notarization and a production update service are not complete. [What works, what is tested, and what is next →](docs/public/PREVIEW-STATUS.md)
+> This is a working browser in active development. Chrome extension compatibility and real Meet/Teams popouts still need acceptance testing. The initial package is a draft developer preview; distribution signing, notarization and a production update service are not complete. [What works, what is tested, and what is next →](docs/public/PREVIEW-STATUS.md)
 
 ![Aava’s native Mac browser with a Tide space, favorite tiles, nested folders and vertical tabs](docs/media/browser.png)
 
