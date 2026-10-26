@@ -14,3 +14,5 @@ jobs:
         run: swift test
       - name: Python script syntax
         run: python3 -m compileall -q scripts
+      - name: Release safety gates
+        run: python3 -m unittest discover -s Tests/Release -v

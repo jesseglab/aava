@@ -25,11 +25,14 @@ The build script creates an **ad-hoc-signed local development app**, not a notar
 
 For signing on a configured development Mac, set `AAVA_SIGN_IDENTITY` before running the build script. Direct distribution requires Developer ID signing, notarization and a production update channel; do not treat development signing as release approval. The Mac App Store is not the current release target.
 
+See [direct distribution](DISTRIBUTION.md) for the staged signing/notarization workflow and [release validation](RELEASE-VALIDATION.md) for the current evidence and outstanding checks.
+
 ## Tests
 
 ```sh
 swift test
 python3 -m compileall -q scripts
+python3 -m unittest discover -s Tests/Release -v
 ```
 
 After a native build, the isolated cookie integration test can run with:
